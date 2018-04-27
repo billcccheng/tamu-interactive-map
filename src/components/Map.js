@@ -1,16 +1,52 @@
 import React, { Component } from 'react';
-import {Map, Marker, GoogleApiWrapper} from 'google-maps-react';
+import ReactDOM from 'react-dom';
+import { Marker } from 'google-maps-react';
 
-export class MapContainer extends Component {
+export class Map extends Component {
   constructor() {
     super();
     this.state = {
       markerPos: {lat: 25.0350, lng: 121.5635}
     }
-    this.handleUpButton = this.handleUpButton.bind(this);
   }
 
-  handleUpButton() {
+  componentDidMount() {
+    this.loadMap();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.google !== this.props.google) {
+      this.loadMap();
+    }
+  }
+
+
+  reCenterMap = () => {
+    const googleMaps = this.props.google.maps;
+    const currentLoc = this.state.markerPos;
+    //if(map){
+      //const center = new googleMaps.LatLng(currentLoc.lat, currentLoc.lng);
+      //map.panTo(center);
+    //}
+  }
+
+  loadMap = () => {
+    if (this.props && this.props.google) {
+      const maps = this.props.google.maps;
+      const mapRef = this.refs.map;
+      const node = ReactDOM.findDOMNode(mapRef);
+
+      const center = new maps.LatLng(25.0340, 121.5645);
+      const zoom = 18;
+      const mapConfig = Object.assign({}, {
+        center: center,
+        zoom: zoom
+      });
+      this.map = new maps.Map(node, mapConfig);
+    }
+  }
+
+  handleUpButton = () => {
     this.setState({
       markerPos: {
         lat: this.state.markerPos.lat + 0.0001,
@@ -22,30 +58,11 @@ export class MapContainer extends Component {
 
   render() {
     return (
-      <div>
-          <button onClick={this.handleUpButton}>Up</button>
-          <Map
-            google={this.props.google}
-            style={style}
-            zoom={18}
-            initialCenter={{
-                lat: 25.0340,
-                lng: 121.5645
-              }}
-          >
-            <Marker position={this.state.markerPos} />
-          </Map>
+      <div ref='map'>
       </div>
     );
   }
 }
 
-const style = {
-  margin: '20px',
-  width: '100%',
-  height: '80%'
-}
 
-export default GoogleApiWrapper({
-  apiKey: "AIzaSyAvV6GrzPfWwufW1iMLwOThnMUTF4NEGkE"
-})(MapContainer)
+export default Map;
