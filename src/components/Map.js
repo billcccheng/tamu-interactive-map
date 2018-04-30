@@ -1,30 +1,33 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { Marker } from 'google-maps-react';
+//import { Marker } from 'google-maps-react';
 
 export class Map extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+    this.googleMaps = this.props.google.maps;
     this.mapRef = React.createRef();
     this.state = {
-      markerPos: {lat: 25.0350, lng: 121.5635}
+      markerPos: {lat: 25.0340, lng: 121.5635}
     }
   }
 
   componentDidMount() {
     this.loadMap();
+    this.renderMarker();
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.google !== this.props.google) {
-      this.loadMap();
-    }
+    this.renderMarker()
+    //if (prevProps.google !== this.props.google) {
+      //this.loadMap();
+    //}
   }
 
 
   reCenterMap = () => {
-    const googleMaps = this.props.google.maps;
-    const currentLoc = this.state.markerPos;
+    //const googleMaps = this.props.google.maps;
+    //const currentLoc = this.state.markerPos;
     //if(map){
       //const center = new googleMaps.LatLng(currentLoc.lat, currentLoc.lng);
       //map.panTo(center);
@@ -33,17 +36,13 @@ export class Map extends Component {
 
   loadMap = () => {
     if (this.props && this.props.google) {
-      const maps = this.props.google.maps;
       const mapRef = this.mapRef.current;
       const node = ReactDOM.findDOMNode(mapRef);
 
-      const center = new maps.LatLng(25.0340, 121.5645);
+      const center = new this.googleMaps.LatLng(25.0340, 121.5645);
       const zoom = 18;
-      const mapConfig = Object.assign({}, {
-        center: center,
-        zoom: zoom
-      });
-      this.map = new maps.Map(node, mapConfig);
+      const mapConfig = { ...{}, center: center, zoom: zoom };
+      this.map = new this.googleMaps.Map(node, mapConfig);
     }
   }
 
@@ -54,7 +53,15 @@ export class Map extends Component {
         lng: this.state.markerPos.lng
       }
     });
+  }
 
+  renderMarker = () => {
+    const pos = new this.googleMaps.LatLng(this.state.markerPos.lat, this.state.markerPos.lng);
+		const pref = {
+      map: this.map,
+      position: pos
+    };
+    this.marker = new this.googleMaps.Marker(pref);
   }
 
   render() {
