@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-//import Map from './Map';
-import { Map, GoogleApiWrapper } from 'google-maps-react';
+import Map from './Map';
+import { GoogleApiWrapper } from 'google-maps-react';
 
 export class MapContainer extends Component {
   render() {
